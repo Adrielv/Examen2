@@ -1,0 +1,50 @@
+﻿@page "/cllamadas"
+@using Examen2.Controllers
+@using Examen2.Models
+
+<h1>Consulta Llamadas</h1>
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>LlamadaId</th>
+            <th>Descripcion</th>
+            <th>Problema</th>
+            <th>Solucion</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+                <th>@item.LlamadaId</th>
+                <th>@item.Descripcion</th>
+                <th>@item.Problema</th>
+                <th>@item.Solucion</th>
+
+
+            </tr>
+            }
+            
+        </tbody>
+</table>
+
+
+
+@code {
+
+    public List<Llamadas> lista { get; set; }
+    public ControllersLlamada controllers = new ControllersLlamada();
+
+
+
+        protected override async Task OnInitializedAsync()
+        {
+             lista = controllers.GetList(P => true);
+        }
+
+}
+
+

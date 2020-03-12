@@ -1,0 +1,176 @@
+﻿@page "/rllamadas"
+@using Examen2.Controllers
+@using Examen2.Models
+
+<h3>Registro Llamadas</h3>
+
+<EditForm Model="@llamadas" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <div class="container">
+        <label for="LlamadaId" class="col-md-2 col-form-label">LlamadaId</label>
+        <input type="number" class="col-md-2 form-check" @bind="llamadas.LlamadaId" />
+        <br />
+        <button type="button" class="col-md-2 btn btn-info" @onclick="Buscar">Buscar</button>
+    </div>
+    <div class="container">
+        <label for="Descripcion" class="col-md-2 col-form-label">Descripcion</label>
+        <input type="text" class="col-md-2 form-check" @bind="llamadas.Descripcion" />
+    </div>
+    <div class="container">
+        <label for="Problema" class="col-md-2 col-form-label">Problema</label>
+        <input type="text" class="col-md-2 form-check" @bind="llamadas.Problema" />
+    </div>
+    <div class="container">
+        <label for="Solucion" class="col-md-2 col-form-label">Solucion</label>
+        <input type="text" class="col-md-2 form-check" @bind="llamadas.Solucion" />
+        <br />
+        <button type="button" class="col-md-2 btn btn-info" @onclick="Agregar">Agregar</button>
+        <br />
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Problema</th>
+                <th>Solucion</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+                @foreach (var item in llamadas.Detalle)
+                {
+                <tr>
+                    <th scope="row">@item.Problema</th>
+                    <th>@item.Solucion</th>
+                    <th><button type="button" class="col-md-2 btn btn-primary" @onclick="(() =>EliminarDetalle(item))">Eliminar</button></th>
+                </tr>
+                 }
+
+            </tbody>
+    </table>
+
+   
+
+    <div class="form-group">
+
+        <button type="button" class="col-md-2 btn btn-primary" @onclick="Limpiar">Limpiar</button>
+        <button type="submit" class="col-md-2 btn btn-success">Guardar</button>
+        <button type="button" class="col-md-2 btn btn-danger" @onclick="Eliminar">Eliminar</button>
+
+
+    </div>
+
+    <h3>@Mensaje</h3>
+
+
+</EditForm>
+
+@code {
+    public Llamadas llamadas = new Llamadas();
+    public string Mensaje;
+
+    public ControllersLlamada controllers = new ControllersLlamada();
+
+
+
+
+
+    public void Guardar()
+    {
+        if (llamadas.Detalle.Count == 0)
+        {
+            Mensaje = "Detalle no puede estar vacio";
+        }
+        else
+        {
+
+
+            if (controllers.Buscar(llamadas.LlamadaId) != null)
+            {
+                if (llamadas.LlamadaId == 0)
+                {
+
+                    controllers.Guardar(llamadas);
+                    Limpiar();
+                    Mensaje = "Guardado";
+                    
+                }
+                else
+                {
+                    controllers.Modificar(llamadas);
+                    Limpiar();
+                    Mensaje = "Modifico";
+                   
+
+                }
+            }
+            else
+            {
+                Mensaje = "Id no existe";
+            }
+        }
+    }
+
+    public void Buscar()
+    {
+        if (llamadas.LlamadaId != 0)
+        {
+            if (controllers.Buscar(llamadas.LlamadaId) != null)
+            {
+                llamadas = controllers.Buscar(llamadas.LlamadaId);
+            }
+            else
+            {
+                Mensaje = "ID no existe";
+                
+            }
+
+        }else
+        {
+            Mensaje = "Selecione un ID";
+        }
+    }
+
+    public void Eliminar()
+    {
+
+        if (controllers.Buscar(llamadas.LlamadaId) != null)
+        {
+            controllers.Eliminar(llamadas.LlamadaId);
+            Mensaje = "Eliminado";
+            Limpiar();
+        }
+        else
+        {
+            Mensaje = "Selecione un ID que exista";
+        }
+    }
+
+    public void Limpiar()
+    {
+        llamadas = new Llamadas();
+        Mensaje = "";
+    }
+
+
+    public void Agregar()
+    {
+        llamadas.Detalle.Add(new LlamadasDetalle()
+        {
+            Problema = llamadas.Problema,
+            Solucion = llamadas.Solucion
+        });
+
+
+    }
+
+
+    public void EliminarDetalle(LlamadasDetalle detalle)
+    {
+
+        llamadas.Detalle.Remove(detalle);
+
+    }
+
+}
